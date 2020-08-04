@@ -23,18 +23,40 @@ use core::fmt;
 pub struct ObjectIdentifier {
     /// Nodes in this OID
     nodes: &'static [u32],
+
+    // TODO(tarcieri): replace this with const panic when OIDs are invalid
+    // See: https://github.com/rust-lang/rust/issues/51999
+    is_valid: bool,
 }
 
 impl ObjectIdentifier {
     /// Create a new OID
     pub const fn new(nodes: &'static [u32]) -> Self {
-        Self { nodes }
+        // TODO(tarcieri): replace this with const panic when OIDs are invalid
+        let mut is_valid = nodes.len() > 2;
+
+        match nodes[0] {
+            0..=2 => (),
+            _ => is_valid = false,
+        }
+
+        match nodes[1] {
+            0..=39 => {}
+            _ => is_valid = false,
+        }
+
+        Self { nodes, is_valid }
     }
 }
 
 impl AsRef<[u32]> for ObjectIdentifier {
     fn as_ref(&self) -> &[u32] {
-        self.nodes
+        // TODO(tarcieri): move this check into OID parsing when const panic is stable
+        if self.is_valid {
+            self.nodes
+        } else {
+            panic!("invalid OID: {:?}", &self.nodes);
+        }
     }
 }
 

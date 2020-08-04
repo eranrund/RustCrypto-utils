@@ -22,8 +22,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.39.0 # MSRV
-          - stable
+          - beta
         target:
           - thumbv7em-none-eabi
           - wasm32-unknown-unknown
@@ -41,8 +40,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.39.0 # MSRV
-          - stable
+          - beta
     steps:
       - uses: actions/checkout@v1
       - uses: actions-rs/toolchain@v1
